@@ -81,3 +81,29 @@ Edge Microvisor Toolkit shares its permissive open-source license:
 
 We acknowledge Microsoft's contributions to the open-source community and thank
 them for providing a secure and efficient Linux distribution.
+
+<!-- THOX-DOCS-STANDARD:START -->
+## Repository Description
+
+The Edge Microvisor Toolkit is a streamlined container host that showcases Intel® silicon optimizations. Built on the Azure Linux distribution, it features a Linux kernel maintained by Intel, incorporating all the latest kernel and user patches.
+
+## Documentation
+
+- [Repository documentation](docs/README.md)
+- [Security policy](SECURITY.md)
+- [Contributing guide](CONTRIBUTING.md)
+- [Legal notice](NOTICE.md)
+
+## THOX.ai LLC
+
+This repository is maintained by THOX.ai LLC.
+
+- Tommy Xaypanya is CTO.
+- Craig Ross is CEO.
+
+## Copyright and Legal
+
+Copyright (c) 2026 THOX.ai LLC. All rights reserved unless this repository includes a separate license file that states otherwise.
+
+THOX-specific documentation, configuration, branding, product definitions, and integration work are owned by THOX.ai LLC unless explicitly noted. Third-party dependencies, forks, vendored components, and upstream source materials remain governed by their original licenses and notices.
+<!-- THOX-DOCS-STANDARD:END -->
