@@ -1,0 +1,58 @@
+name: THOX Agent Team
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited, reopened, synchronize, ready_for_review, labeled, unlabeled, closed]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 8 * * *"
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+  actions: read
+  checks: read
+  statuses: read
+
+concurrency:
+  group: thox-agent-team-${{ github.repository }}-${{ github.event.pull_request.number || github.event.issue.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  policy-preflight:
+    name: THOX policy preflight (not a merge authorization)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate agent-team policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .github/workflows/thox-agent-team.yml
+          test -f docs/thox-agent-team.md
+          grep -q "Required checks" docs/thox-agent-team.md
+          grep -q "Branch protection" docs/thox-agent-team.md
+          grep -q "Branch pruning policy" docs/thox-agent-team.md
+      - name: Reject ineligible PR states
+        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        env:
+          EVENT_PATH: ${{ github.event_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '.pull_request.draft == false' "$EVENT_PATH" >/dev/null
+          jq -e '.pull_request.head.repo.full_name == .repository.full_name' "$EVENT_PATH" >/dev/null
+          if jq -e '[.pull_request.labels[].name] | any(. == "do-not-merge" or . == "human-required" or . == "agent:blocked")' "$EVENT_PATH" >/dev/null; then
+            echo "Blocking label present" >&2
+            exit 1
+          fi
+          echo "PR state passed THOX preflight. Required checks and branch protection remain authoritative at merge time."
